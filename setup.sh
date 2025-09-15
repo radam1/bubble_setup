@@ -17,7 +17,7 @@ if [ -f "bubble_ascii.txt" ]; then
     echo "Not re-importing bubble logo art"
 else
     wget https://raw.githubusercontent.com/radam1/bubble_setup/refs/heads/main/bubble_ascii.txt
-    echo "echo -e \"\033[34m$(cat bubble_ascii.txt)\033[0m\"" >> ~/.bashrc
+    echo 'echo -e "\033[34m$(cat bubble_ascii.txt)\033[0m"' >> ~/.bashrc
 fi
 
 echo -e "\033[34m$(cat bubble_ascii.txt)\033[0m"
@@ -44,7 +44,7 @@ if ! grep -q "export CR_PAT=" ~/.bashrc; then
 else
     # Update the value if it already exists
     echo "CR_PAT Exists in .bashrc"
-    read -s -p "Would you like to replace token in .bashrc? (y/n) " answer
+    read -p "Would you like to replace token in .bashrc? (y/n) " answer
     if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
         read -p "Enter your GitHub Classic Token Key: " token
         echo
@@ -69,14 +69,14 @@ fi
 # installing some debugging tools
 echo "Installing minicom and tcpdump for debugging..."
 sudo apt update
-sudo apt install minicom tcpdump
+sudo apt install minicom tcpdump -y 
 
 # install or update the most recent robot docker image
 docker pull ghcr.io/patpat98/bubble_blue:jazzy-robot
 
 # Adding a few aliasses to the .bashrc file
 if ! grep -q "alias enter_bb" ~/.bashrc; then
-    echo "alias enter_bb=\"\"" >> .bashrc
+    echo "alias enter_bb=\"docker exec -it bubble_blue /bin/bash\"" >> .bashrc
 fi
 
 # Add the docker compose script
@@ -84,4 +84,4 @@ if ! [ -f docker-compose.yaml ]; then
     wget https://raw.githubusercontent.com/radam1/bubble_setup/refs/heads/main/docker-compose.yaml
 fi
 
-exit 0
+exit 0 

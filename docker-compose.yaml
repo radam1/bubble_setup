@@ -1,6 +1,7 @@
 services:
   blue:
-    image: ghcr.io/patpat98/blue:jazzy-robot
+    container_name: bubble_blue
+    image: ghcr.io/patpat98/bubble_blue:jazzy-robot
     network_mode: host
     privileged: true
     cap_add:

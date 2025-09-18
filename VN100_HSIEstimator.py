@@ -19,7 +19,7 @@ class HSIEstimator():
         )
 
         # Variables defining port status
-        self.port_active = True
+        self.port_active = False
         self.port_thread = None
         self.thread_lock = threading.Lock()
 
@@ -74,10 +74,10 @@ class HSIEstimator():
 
                 else:
                     # We don't really care about other messages in this program, so just continue
-                    continue
+                    print(f"Unhandled Message: {msg}")
 
             except Exception as e:
-                warn(f'Error in Port 1: {e}')
+                print(f'Error in Port 1: {e}')
 
         print('Serial Port 1 Closing')
         return
@@ -85,7 +85,7 @@ class HSIEstimator():
     def check_to_continue(self):
         while True: 
             try: 
-                passed = chr(input('Would you like to continue? (y/n): '))
+                passed = input('Would you like to continue? (y/n): ')
                 if passed == 'y': 
                     return True
                 if passed == 'n':
@@ -98,17 +98,20 @@ class HSIEstimator():
 
     def start_reading_threads(self):
         # Bring up both threads
-        with self.thread_lock:
-            if not ports_active:
-                ports_active = True
+        try: 
+            with self.thread_lock:
+                if not self.port_active:
+                    self.port_active = True
 
-                if port_thread is None or not port_thread.is_alive():
-                    port_thread = threading.Thread(
-                        target=self.reader,
-                        daemon=True
-                    )
-                    port_thread.start()
-                    print('Started Port 1 reading thread')
+                    if self.port_thread is None or not self.port_thread.is_alive():
+                        self.port_thread = threading.Thread(
+                            target=self.reader,
+                            daemon=True
+                        )
+                        self.port_thread.start()
+                        print('Started Port 1 reading thread')
+        except Exception as e:
+            print(f'Exception! {e}')
 
     def stop_reading_threads(self):
         # Bring down both threads
@@ -122,10 +125,12 @@ class HSIEstimator():
 
     def run_hsi_calibration(self):
         # Step 0: Set async data frequency to 0 so we can see all messages on port 1
+        print("Turning Serial Port Async Messages Off")
         freq_off_msg = self.write_full_vn_message('VNWRG,07,0,1')
         self.ser_port.write(freq_off_msg)
 
         # Step 1: Check the value of the hsi register for a baseline
+        print("Checking Value for HSI Parameters Currently")
         check_hsi_msg = self.write_full_vn_message(f"VNRRG,47")
         self.ser_port.write(check_hsi_msg)
 
@@ -133,7 +138,7 @@ class HSIEstimator():
         t_now = time.time()
         timeout = 15 # seconds
         # wait until hsi has been updated
-        while (not self.hsi_before['C']) and (t_now - t_start > timeout):
+        while (not self.hsi_before['C']) and (t_now - t_start < timeout):
             t_now = time.time()
         if self.hsi_before['C']:
             print("HSI has been updated. Values are:")
@@ -150,11 +155,12 @@ class HSIEstimator():
             return 
         
         # Step 2: Send the message to start the hsi estimation process 
+        print("Moving on to HSI Estiamtion Step")
         getting_input = True
         while getting_input: 
             try:
                 conv_rate = input("What convergence rate would you like? (1-5): ")
-                if float(conv_rate) < 5 and float(conv_rate) > 1: 
+                if float(conv_rate) <= 5 and float(conv_rate) >= 1: 
                     getting_input = False
                     start_msg = self.write_full_vn_message(f"VNWRG,44,1,1,{conv_rate}")
                     self.ser_port.write(start_msg)
@@ -176,7 +182,7 @@ class HSIEstimator():
         t_now = time.time()
         timeout = 15 # seconds
         # wait until hsi has been updated
-        while (not self.hsi_after['C']) and (t_now - t_start > timeout):
+        while (not self.hsi_after['C']) and (t_now - t_start < timeout):
             t_now = time.time()
         if self.hsi_after['C']:
             print("HSI has been updated. Values are:")
@@ -208,7 +214,6 @@ class HSIEstimator():
         self.ser_port.write(save_settings_msg)
         print("HSI process has completed and saved. Have a good day and good luck!")
         return 
-
 
 def main(args=None):
     #Instantiate the HSI Estimator

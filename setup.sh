@@ -72,7 +72,7 @@ fi
 # installing some debugging tools
 echo "Installing minicom and tcpdump for debugging..."
 sudo apt update
-sudo apt install minicom tcpdump -y 
+sudo apt install minicom tcpdump python3-numpy python3-serial -y 
 
 # install or update the most recent robot docker image
 docker pull ghcr.io/patpat98/bubble_blue:jazzy-robot

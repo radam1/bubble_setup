@@ -68,9 +68,8 @@ else
     fi
 fi
 
-
 # installing some debugging tools
-echo "Installing minicom and tcpdump for debugging..."
+echo "Installing packages for debugging and configuration..."
 sudo apt update
 sudo apt install minicom tcpdump python3-numpy python3-serial -y 
 

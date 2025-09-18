@@ -199,6 +199,13 @@ class HSIEstimator():
             print("Stopping Before Saving the Results!")
             return 
         
+        reset_async_output = self.write_full_vn_message("VNWRG,7,40,1") # back to 40Hz
+        self.ser_port.write(reset_async_output)
+
+        # now wait a second and save the data: 
+        time.sleep(1)
+        save_settings_msg = self.write_full_vn_message("VNWNV")
+        self.ser_port.write(save_settings_msg)
         print("HSI process has completed and saved. Have a good day and good luck!")
         return 
 

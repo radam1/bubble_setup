@@ -16,7 +16,7 @@ fi
 if [ -f "bubble_ascii.txt" ]; then
     echo "Not re-importing bubble logo art"
 else
-    wget https://raw.githubusercontent.com/radam1/bubble_setup/refs/heads/main/bubble_ascii.txt
+    wget https://raw.githubusercontent.com/patpat98/bubble_setup/refs/heads/main/bubble_ascii.txt
     echo 'echo -e "\033[34m$(cat bubble_ascii.txt)\033[0m"' >> ~/.bashrc
 fi
 
@@ -83,14 +83,14 @@ fi
 
 # Add the docker compose script
 if ! [ -f docker-compose.yaml ]; then 
-    wget https://raw.githubusercontent.com/radam1/bubble_setup/refs/heads/main/docker-compose.yaml
+    wget https://raw.githubusercontent.com/patpat98/bubble_setup/refs/heads/main/docker-compose.yaml
 fi
 
 # Finally, check to see if we want to do the VN100 HSI right now
 
 # if it doesn't exist, pull HSI Estimator script
 if ! [ -f VN100_HSIEstimator.py ]; then
-    wget https://raw.githubusercontent.com/radam1/bubble_setup/refs/heads/main/VN100_HSIEstimator.py
+    wget https://raw.githubusercontent.com/patpat98/bubble_setup/refs/heads/main/VN100_HSIEstimator.py
 fi 
 
 # check if we want to run it now
